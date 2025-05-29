@@ -1308,7 +1308,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID("shoot flare") && isServer())
 	{
 		CBlob@[] missiles;
-		if (getMap().getBlobsInRadius(this.getPosition(), 100.0f, @missiles))
+		if (getMap().getBlobsInRadius(this.getPosition(), 250.0f, @missiles))
 		{
 			for (int i = 0; i < missiles.size(); i++)
 			{
