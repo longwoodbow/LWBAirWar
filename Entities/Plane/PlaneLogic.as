@@ -162,12 +162,15 @@ void onTick(CBlob@ this)
 		plane.amount_special = specialAmounts[plane.special_type];
 
 		// click menu
-		if (this.isMyPlayer() && this.isKeyJustPressed(key_action1)) 
+		if (this.isMyPlayer()) 
 		{
-			CGridMenu @gmenu;
-			CGridButton @gbutton;
-		
-			this.ClickGridMenu(0, gmenu, gbutton);
+			if (this.isKeyJustPressed(key_action1))
+			{
+				CGridMenu @gmenu;
+				CGridButton @gbutton;
+			
+				this.ClickGridMenu(0, gmenu, gbutton);
+			}
 
 			if (this.isKeyJustPressed(key_use)) 
 			{
