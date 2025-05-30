@@ -165,7 +165,7 @@ const u16[] specialArcs = {
 									0,//plsl
 									0,//tls
 									180,//uav
-									0,//mpbm
+									90,//mpbm
 									0,//iews
 									90//mstm
 								};
