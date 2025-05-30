@@ -65,6 +65,8 @@ void onInit(CBlob@ this)
 
 	//this.Tag("60fps_camera"); // from StandaedControls.as
 
+	//this.getSprite.SetFrame(5 + XORRandom(5));
+
 	this.getSprite().RemoveSpriteLayer("TLS");
 	CSpriteLayer@ tls = this.getSprite().addSpriteLayer("TLS", "TLS.png" , 32, 8, this.getTeamNum(), 0);
 

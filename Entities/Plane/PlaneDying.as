@@ -6,7 +6,7 @@ void onTick(CBlob@ this)
 {
 	if (this.hasTag("dead"))
 	{
-		MakeDustParticle(this.getPosition(), "SmallSmoke?.png");
+		MakeDustParticle(this.getPosition() + Vec2f(0.0f, 8.0f), "SmallSmoke?.png");
 		// still moves when dying
 		this.AddForce(Vec2f(0.0f, -25.0f).RotateBy(this.getAngleDegrees()));
 
