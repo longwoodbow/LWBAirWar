@@ -23,6 +23,7 @@ void onInit(CBlob@ this)
 	this.set_f32("gib health", -1.5f);
 	this.Tag("player");
 	this.Tag("landed");
+	this.Tag("spawned");
 
 	this.set_f32("explosive_radius", 64.0f);
 	this.set_f32("explosive_damage", 0.0f);
@@ -76,30 +77,6 @@ void onInit(CBlob@ this)
 		tls.SetVisible(false);
 	}
 
-	if (this.isMyPlayer())
-	{
-		CGridMenu@ menu = CreateGridMenu(this.getScreenPos() + Vec2f(24.0f, this.getRadius() * 1.0f + 48.0f), this, Vec2f(8.0f, SpecialWeaponType::count), "Change Special Weapon");
-		if (menu !is null)
-		{
-			menu.deleteAfterClick = false;
-
-			for (uint i = 0 ; i < SpecialWeaponType::count; i++)
-			{
-				CBitStream params;
-				params.write_u8(i);
-
-				CGridButton@ button = menu.AddTextButton(specialDescriptions[i], "PlaneLogic.as", "Callback_ChangeSpecial", Vec2f(8.0f, 1.0f), params);
-				/*if (button !is null)
-				{
-					button.clickable = true;
-					button.selectOnClick = true;
-					button.selectOneOnClick = true;
-				}*/
-				//button.SetHoverText( pclass.description + "\n" );
-			}
-		}
-	}
-
 	this.getCurrentScript().removeIfTag = "dead";
 }
 
@@ -130,7 +107,24 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	if (this.isMyPlayer()) ManageCamera(this);
+	if (this.isMyPlayer())
+	{
+		ManageCamera(this);
+
+		if (this.isKeyJustPressed(key_action1))
+		{
+			CGridMenu @gmenu;
+			CGridButton @gbutton;
+		
+			this.ClickGridMenu(0, gmenu, gbutton);
+		}
+
+		if (this.hasTag("spawned")) // want to do it in onInit...
+		{
+			MakeSpecialWeaponMenu(this);
+			this.Untag("spawned");
+		}
+	}
 
 	PlaneInfo@ plane;
 	if (!this.get("planeInfo", @plane))
@@ -164,14 +158,6 @@ void onTick(CBlob@ this)
 		// click menu
 		if (this.isMyPlayer()) 
 		{
-			if (this.isKeyJustPressed(key_action1))
-			{
-				CGridMenu @gmenu;
-				CGridButton @gbutton;
-			
-				this.ClickGridMenu(0, gmenu, gbutton);
-			}
-
 			if (this.isKeyJustPressed(key_use)) 
 			{
 				this.SendCommand(this.getCommandID("take off"));
@@ -404,26 +390,7 @@ void onTick(CBlob@ this)
 				{
 					this.SendCommand(this.getCommandID("landing"));
 
-					CGridMenu@ menu = CreateGridMenu(this.getScreenPos() + Vec2f(24.0f, this.getRadius() * 1.0f + 48.0f), this, Vec2f(8.0f, SpecialWeaponType::count), "Change Special Weapon");
-					if (menu !is null)
-					{
-						menu.deleteAfterClick = false;
-
-						for (uint i = 0 ; i < SpecialWeaponType::count; i++)
-						{
-							CBitStream params;
-							params.write_u8(i);
-
-							CGridButton@ button = menu.AddTextButton(specialDescriptions[i], "PlaneLogic.as", "Callback_ChangeSpecial", Vec2f(8.0f, 1.0f), params);
-							/*if (button !is null)
-							{
-								button.clickable = true;
-								button.selectOnClick = true;
-								button.selectOneOnClick = true;
-							}*/
-							//button.SetHoverText( pclass.description + "\n" );
-						}
-					}
+					MakeSpecialWeaponMenu(this);
 
 					break;
 				}
@@ -880,6 +847,23 @@ void onTick(CBlob@ this)
 		this.SendCommand(this.getCommandID("shoot flare"));
 
 		plane.amount_flare--;
+	}
+}
+
+void MakeSpecialWeaponMenu(CBlob@ this)
+{
+	CGridMenu@ menu = CreateGridMenu(Vec2f(getScreenWidth() / 2, getScreenHeight() / 2), this, Vec2f(16.0f, 9.0f), "Change Special Weapon");
+	if (menu !is null)
+	{
+		menu.deleteAfterClick = false;
+
+		for (uint i = 0 ; i < SpecialWeaponType::count; i++)
+		{
+			CBitStream params;
+			params.write_u8(i);
+
+			CGridButton@ button = menu.AddTextButton(specialDescriptions[i], "PlaneLogic.as", "Callback_ChangeSpecial", Vec2f(8.0f, 1.0f), params);
+		}
 	}
 }
 

@@ -89,7 +89,6 @@ void onTick(CBlob@ this)
 
 			if (inRadar)
 			{
-		Sound::Play("M16Fire.ogg", this.getPosition());
 				Vec2f aim = enemy.getPosition();
 				Vec2f aimedDirection = aim - pos;
 				f32 aimAngle = aimedDirection.Angle();
