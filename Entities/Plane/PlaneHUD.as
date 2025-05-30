@@ -8,6 +8,12 @@ void onInit(CSprite@ this)
 	getHUD().SetDefaultCursor();
 }
 
+bool IsOnScreen(Vec2f pos)
+{
+	//CBlob.isOnScreen is useless
+	return pos.x >= 0.0f && pos.x <= getScreenWidth() && pos.y >= 0.0f && pos.y <= getScreenHeight();
+}
+
 void onRender(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
@@ -37,7 +43,7 @@ void onRender(CSprite@ this)
 			SColor teamColor = otherPlane.getTeamNum() == 1 ? SColor(0xff, 0xff, 0x00, 0x00) :  SColor(0xff, 0x00, 0x00, 0xFF);
 			Vec2f planePos = otherPlane.getPosition();
 
-			if (otherPlane.isOnScreen() && !otherPlane.isMyPlayer())
+			if (IsOnScreen(otherPlane.getScreenPos()) && !otherPlane.isMyPlayer())
 			{
 				Vec2f point0 = planePos + Vec2f(-8.0f, -8.0f).RotateBy(blob.getAngleDegrees()) / zoom;
 				Vec2f point1 = planePos + Vec2f(8.0f, -8.0f).RotateBy(blob.getAngleDegrees()) / zoom;
@@ -52,13 +58,13 @@ void onRender(CSprite@ this)
 			{
 				Vec2f angleVec = planePos - pos;
 				angleVec.Normalize();
-				GUI::DrawArrow(pos + angleVec * 290.0f, pos + angleVec * 300.0f, teamColor);
+				GUI::DrawArrow(pos + angleVec * 275.0f, pos + angleVec * 300.0f, teamColor);
 			}
 
 			// Check IEWS
 			if (otherPlane.exists("IEWS") && otherPlane.get_u16("IEWS") > 0)
 			{
-				GUI::DrawCircle(planePos, 500.0f * Maths::Pi * zoom, teamColor);
+				GUI::DrawCircle(otherPlane.getScreenPos(), 500.0f * Maths::Pi * zoom, teamColor);
 			}
 		}
 	}
@@ -72,7 +78,7 @@ void onRender(CSprite@ this)
 			SColor teamColor = base.getTeamNum() == 1 ? SColor(0xff, 0xff, 0x00, 0x00) :  SColor(0xff, 0x00, 0x00, 0xFF);
 			Vec2f basePos = base.getPosition();
 
-			if (base.isOnScreen())
+			if (IsOnScreen(base.getScreenPos()))
 			{
 				Vec2f point0 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees()) / zoom;
 				Vec2f point1 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees() - 60) / zoom;
