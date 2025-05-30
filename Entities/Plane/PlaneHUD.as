@@ -28,19 +28,74 @@ void onRender(CSprite@ this)
 
 	f32 zoom = getCamera().targetDistance;
 
-	// Check IEWS
 	CBlob@[] planes;
 	if (getBlobsByTag("player", @planes))
 	{
 		for (int i = 0; i < planes.size(); i++)
 		{
-			CBlob@ plane = planes[i];
-			if (plane.exists("IEWS") && plane.get_u16("IEWS") > 0)
+			CBlob@ otherPlane = planes[i];
+			SColor teamColor = otherPlane.getTeamNum() == 1 ? SColor(0xff, 0xff, 0x00, 0x00) :  SColor(0xff, 0x00, 0x00, 0xFF);
+			Vec2f planePos = otherPlane.getPosition();
+
+			if (otherPlane.isOnScreen() && !otherPlane.isMyPlayer())
 			{
-				GUI::DrawCircle(plane.getScreenPos(), 500.0f * Maths::Pi * zoom, plane.getTeamNum() == 1 ? SColor(0xff, 0xff, 0x00, 0x00) :  SColor(0xff, 0x00, 0x00, 0xFF));
+				Vec2f point0 = planePos + Vec2f(-8.0f, -8.0f).RotateBy(blob.getAngleDegrees()) / zoom;
+				Vec2f point1 = planePos + Vec2f(8.0f, -8.0f).RotateBy(blob.getAngleDegrees()) / zoom;
+				Vec2f point2 = planePos + Vec2f(8.0f, 8.0f).RotateBy(blob.getAngleDegrees()) / zoom;
+				Vec2f point3 = planePos + Vec2f(-8.0f, 8.0f).RotateBy(blob.getAngleDegrees()) / zoom;
+				GUI::DrawLine(point0, point1, teamColor);
+				GUI::DrawLine(point1, point2, teamColor);
+				GUI::DrawLine(point2, point3, teamColor);
+				GUI::DrawLine(point3, point0, teamColor);
+			}
+			else if (!otherPlane.isMyPlayer())
+			{
+				Vec2f angleVec = planePos - pos;
+				angleVec.Normalize();
+				GUI::DrawArrow(pos + angleVec * 290.0f, pos + angleVec * 300.0f, teamColor);
+			}
+
+			// Check IEWS
+			if (otherPlane.exists("IEWS") && otherPlane.get_u16("IEWS") > 0)
+			{
+				GUI::DrawCircle(planePos, 500.0f * Maths::Pi * zoom, teamColor);
 			}
 		}
 	}
+
+	CBlob@[] bases;
+	if (getBlobsByName("airwar_base", @bases))
+	{
+		for (int i = 0; i < bases.size(); i++)
+		{
+			CBlob@ base = bases[i];
+			SColor teamColor = base.getTeamNum() == 1 ? SColor(0xff, 0xff, 0x00, 0x00) :  SColor(0xff, 0x00, 0x00, 0xFF);
+			Vec2f basePos = base.getPosition();
+
+			if (base.isOnScreen())
+			{
+				Vec2f point0 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees()) / zoom;
+				Vec2f point1 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees() - 60) / zoom;
+				Vec2f point2 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees() - 120) / zoom;
+				Vec2f point3 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees() - 180) / zoom;
+				Vec2f point4 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees() + 120) / zoom;
+				Vec2f point5 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees() + 60) / zoom;
+				GUI::DrawLine(point0, point1, teamColor);
+				GUI::DrawLine(point1, point2, teamColor);
+				GUI::DrawLine(point2, point3, teamColor);
+				GUI::DrawLine(point3, point4, teamColor);
+				GUI::DrawLine(point4, point5, teamColor);
+				GUI::DrawLine(point5, point0, teamColor);
+			}
+			else
+			{
+				Vec2f angleVec = basePos - pos;
+				angleVec.Normalize();
+				GUI::DrawArrow(pos + angleVec * 200.0f, pos + angleVec * 250.0f, teamColor);
+			}
+		}
+	}
+
 	// show radar
 	u16 range = plane.use_special ? specialRanges[plane.special_type] : missile_range;
 	GUI::DrawCircle(blob.getScreenPos(), range * Maths::Pi * zoom, SColor(0xff, 0x00, 0xff, 0x00));
@@ -152,7 +207,7 @@ void onRender(CSprite@ this)
 				Vec2f angle = missile.getPosition() - blob.getPosition();
 				angle.Normalize();
 
-				GUI::DrawLine(pos + angle * 40, pos + angle * 50, SColor(0xff, 0xff, 0x00, 0x00));
+				GUI::DrawArrow(pos + angle * 40, pos + angle * 50, SColor(0xff, 0xff, 0x00, 0x00));
 
 				alert = true;
 			}
