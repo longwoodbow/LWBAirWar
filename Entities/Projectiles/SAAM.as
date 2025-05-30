@@ -105,7 +105,7 @@ void onTick(CBlob@ this)
 					dif += 360.0f;
 				}
 
-				float homingPower = 5.0f;
+				float homingPower = 10.0f;
 
 				if (this.hasTag("ECM")) homingPower * 0.66f;
 				if (this.hasTag("ESM")) homingPower * 1.5f;

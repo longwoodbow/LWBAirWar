@@ -66,7 +66,7 @@ void onTick(CBlob@ this)
 				dif += 360.0f;
 			}
 
-			float homingPower = 5.0f;
+			float homingPower = 10.0f;
 
 			if (dif >= 0.0f)
 			{
