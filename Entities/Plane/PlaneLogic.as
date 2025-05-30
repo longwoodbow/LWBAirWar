@@ -168,12 +168,12 @@ void onTick(CBlob@ this)
 			CGridButton @gbutton;
 		
 			this.ClickGridMenu(0, gmenu, gbutton);
-		}
 
-		if (this.isKeyJustPressed(key_use)) 
-		{
-			this.SendCommand(this.getCommandID("take off"));
-			this.ClearMenus();
+			if (this.isKeyJustPressed(key_use)) 
+			{
+				this.SendCommand(this.getCommandID("take off"));
+				this.ClearMenus();
+			}
 		}
 		return;
 	}
