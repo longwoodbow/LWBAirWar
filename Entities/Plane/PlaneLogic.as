@@ -141,7 +141,7 @@ void onTick(CBlob@ this)
 
 	if (this.hasTag("landed"))
 	{
-		this.server_SetHealth(this.getHealth()); // heal
+		this.server_SetHealth(this.getInitialHealth()); // heal
 
 		this.setVelocity(Vec2f_zero); // stop moving
 
