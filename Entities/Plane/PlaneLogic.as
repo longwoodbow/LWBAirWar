@@ -20,6 +20,9 @@ void onInit(CBlob@ this)
 	PlaneInfo plane;
 	this.set("planeInfo", @plane);
 
+	this.set_u32("hit_message", 0);
+	this.set_bool("destroyed_message", false);
+
 	this.set_f32("gib health", -1.5f);
 	this.Tag("player");
 	this.Tag("landed");

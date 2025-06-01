@@ -28,9 +28,10 @@ void onRender(CSprite@ this)
 	}
 
 	Vec2f pos = blob.getPosition();
+	Vec2f spos = blob.getScreenPos();
 	CControls@ c = getControls();
 	if (c is null) return;
-	Vec2f spos = c.getMouseScreenPos() + Vec2f(0.0f, 12.0f * cl_mouse_scale);
+	Vec2f cpos = c.getMouseScreenPos() + Vec2f(0.0f, 12.0f * cl_mouse_scale);
 
 	f32 zoom = getCamera().targetDistance;
 
@@ -58,7 +59,7 @@ void onRender(CSprite@ this)
 			{
 				Vec2f angleVec = planePos - pos;
 				angleVec.Normalize();
-				GUI::DrawArrow(pos + angleVec * 275.0f, pos + angleVec * 300.0f, teamColor);
+				GUI::DrawArrow(pos + angleVec * 125.0f / zoom, pos + angleVec * 150.0f / zoom, teamColor);
 			}
 
 			// Check IEWS
@@ -97,14 +98,14 @@ void onRender(CSprite@ this)
 			{
 				Vec2f angleVec = basePos - pos;
 				angleVec.Normalize();
-				GUI::DrawArrow(pos + angleVec * 200.0f, pos + angleVec * 250.0f, teamColor);
+				GUI::DrawArrow(pos + angleVec * 60.0f / zoom, pos + angleVec * 110.0f / zoom, teamColor);
 			}
 		}
 	}
 
 	// show radar
 	u16 range = plane.use_special ? specialRanges[plane.special_type] : missile_range;
-	GUI::DrawCircle(blob.getScreenPos(), range * Maths::Pi * zoom, SColor(0xff, 0x00, 0xff, 0x00));
+	GUI::DrawCircle(spos, range * Maths::Pi * zoom, SColor(0xff, 0x00, 0xff, 0x00));
 	u16 arc = plane.use_special ? specialArcs[plane.special_type] : missile_arc;
 	GUI::DrawLine(pos, pos + Vec2f(0.0f, -range).RotateBy(blob.getAngleDegrees() + arc / 2.0f), SColor(0xff, 0x00, 0xff, 0x00));
 	GUI::DrawLine(pos, pos + Vec2f(0.0f, -range).RotateBy(blob.getAngleDegrees() - arc / 2.0f), SColor(0xff, 0x00, 0xff, 0x00));
@@ -127,6 +128,7 @@ void onRender(CSprite@ this)
 		GUI::DrawCircle(target.getScreenPos(), 24.0f * zoom, SColor(0xff, 0x00, 0xff, 0x00));
 	}
 
+	// weapons reloading
 	if (plane.use_special)
 	{
 		if (specialCharges[plane.special_type] > 0)
@@ -213,7 +215,7 @@ void onRender(CSprite@ this)
 				Vec2f angle = missile.getPosition() - blob.getPosition();
 				angle.Normalize();
 
-				GUI::DrawArrow(pos + angle * 40, pos + angle * 50, SColor(0xff, 0xff, 0x00, 0x00));
+				GUI::DrawArrow(pos + angle * 40.0f / zoom, pos + angle * 50.0f / zoom, SColor(0xff, 0xff, 0x00, 0x00));
 
 				alert = true;
 			}
@@ -233,33 +235,33 @@ void onRender(CSprite@ this)
 
 		GUI::SetFont("menu");
 
-		GUI::DrawText((!plane.use_special ? ">" : "") + "MSL:" + plane.amount_missile, spos, color);
-		GUI::DrawText((plane.use_special ? ">" : "") + specialTypeNames[plane.special_type] + ":" + plane.amount_special, spos + Vec2f(0.0f, 10.0f), color);
-		GUI::DrawText("FLR:" + plane.amount_flare, spos + Vec2f(0.0f, 20.0f), color);
-		GUI::DrawText("DMG:" + (100.0f - blob.getHealth() / blob.getInitialHealth() * 100) + "%", spos + Vec2f(0.0f, 30.0f), color);
+		GUI::DrawText((!plane.use_special ? ">" : "") + "MSL:" + plane.amount_missile, cpos, color);
+		GUI::DrawText((plane.use_special ? ">" : "") + specialTypeNames[plane.special_type] + ":" + plane.amount_special, cpos + Vec2f(0.0f, 10.0f), color);
+		GUI::DrawText("FLR:" + plane.amount_flare, cpos + Vec2f(0.0f, 20.0f), color);
+		GUI::DrawText("DMG:" + (100.0f - blob.getHealth() / blob.getInitialHealth() * 100) + "%", cpos + Vec2f(0.0f, 30.0f), color);
 
-		if (alert) GUI::DrawTextCentered("MISSILE ALERT", blob.getScreenPos() + Vec2f(0.0f, 42.0f), color);
+		if (alert) GUI::DrawTextCentered("MISSILE ALERT", spos + Vec2f(0.0f, 42.0f), color);
 
-		if (blob.hasTag("ECM")) GUI::DrawTextCentered("ECM ACTIVATED", blob.getScreenPos() + Vec2f(0.0f, -42.0f), color);
-		if (blob.hasTag("ESM")) GUI::DrawTextCentered("ESM ACTIVATED", blob.getScreenPos() + Vec2f(0.0f, -52.0f), color);
+		if (blob.hasTag("ECM")) GUI::DrawTextCentered("ECM ACTIVATED", spos + Vec2f(0.0f, -42.0f), color);
+		if (blob.hasTag("ESM")) GUI::DrawTextCentered("ESM ACTIVATED", spos + Vec2f(0.0f, -52.0f), color);
 
 		if (u_showtutorial)
 		{
-			GUI::DrawText("W:Accel", spos + Vec2f(0.0f, 50.0f), color);
-			GUI::DrawText("S:Brake", spos + Vec2f(0.0f, 60.0f), color);
-			GUI::DrawText("A/D:Yaw", spos + Vec2f(0.0f, 70.0f), color);
-			GUI::DrawText("E on ally base: Landing and get Resupply/Take off", spos + Vec2f(0.0f, 80.0f), color);
-			GUI::DrawText("F:Active/Deactive Special Weapon", spos + Vec2f(0.0f, 90.0f), color);
-			GUI::DrawText("C:Change target", spos + Vec2f(0.0f, 100.0f), color);
-			GUI::DrawText("Space:Flare", spos + Vec2f(0.0f, 110.0f), color);
+			GUI::DrawText("W:Accel", cpos + Vec2f(0.0f, 50.0f), color);
+			GUI::DrawText("S:Brake", cpos + Vec2f(0.0f, 60.0f), color);
+			GUI::DrawText("A/D:Yaw", cpos + Vec2f(0.0f, 70.0f), color);
+			GUI::DrawText("E on ally base: Landing and get Resupply/Take off", cpos + Vec2f(0.0f, 80.0f), color);
+			GUI::DrawText("F:Active/Deactive Special Weapon", cpos + Vec2f(0.0f, 90.0f), color);
+			GUI::DrawText("C:Change target", cpos + Vec2f(0.0f, 100.0f), color);
+			GUI::DrawText("Space:Flare", cpos + Vec2f(0.0f, 110.0f), color);
 
-			GUI::DrawText("Kill enemies until tickets get empty or destroy enemy base to win", spos + Vec2f(0.0f, 130.0f), color);
+			GUI::DrawText("Kill enemies until tickets get empty or destroy enemy base to win", cpos + Vec2f(0.0f, 130.0f), color);
 
-			GUI::DrawText("Press F1 to hide controls", spos + Vec2f(0.0f, 150.0f), color);
+			GUI::DrawText("Press F1 to hide controls", cpos + Vec2f(0.0f, 150.0f), color);
 		}
 		else
 		{
-			GUI::DrawText("Press F1 to show controls", spos + Vec2f(0.0f, 50.0f), color);
+			GUI::DrawText("Press F1 to show controls", cpos + Vec2f(0.0f, 50.0f), color);
 		}
 	}
 
@@ -276,5 +278,19 @@ void onRender(CSprite@ this)
 					   (health > initHealth * 0.2f) ? SColor(0xff, 0xff, 0xff, 0x00) :
 					   SColor(0xff, 0xff, 0x00, 0x00);
 		GUI::DrawLine(start, end, color);
+	}
+
+	// hit and destroyed message
+	if (blob.get_u32("hit_message") > getGameTime())
+	{
+		SColor color = SColor(0xff, 0x00, 0xff, 0x00);
+		if(blob.get_bool("destroyed_message"))
+		{
+			GUI::DrawTextCentered("DESTROYED", spos + Vec2f(0.0f, 30.0f), color);
+		}
+		else
+		{
+			GUI::DrawTextCentered("HIT", spos + Vec2f(0.0f, 30.0f), color);
+		}
 	}
 }
