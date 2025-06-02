@@ -81,6 +81,8 @@ void onTick(CBlob@ this)
 		}
 		Pierce(this);   //map
 		this.setAngleDegrees(-angle);
+
+		this.AddForce(velocity * 0.2f);
 	}
 }
 
