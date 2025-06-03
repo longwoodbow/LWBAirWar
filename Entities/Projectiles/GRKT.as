@@ -87,8 +87,22 @@ void onTick(CBlob@ this)
 
 		this.AddForce(velocity * 0.5f);
 
-		// smoke effect
-		MakeDustParticle(pos + Vec2f(0.0f, 8.0f), "SmallSmoke?.png");
+		if (isClient())
+		{
+			// smoke effect
+			MakeDustParticle(pos + Vec2f(0.0f, 8.0f), "SmallSmoke?.png");
+			// fire particle
+			SColor color = SColor(0xff, 0xdb, 0x57, 0x43);
+			f32 randomInn = -10.0f + ((f32(XORRandom(256)) / 256.0f) * 20.0f);
+			CParticle@ p = ParticlePixelUnlimited(this.getPosition(), Vec2f(-5.0f, 0.0f).RotateBy(this.getAngleDegrees() + randomInn), color, true);
+			if(p !is null)
+			{
+			    p.collides = false;
+			    p.gravity = Vec2f_zero;
+			    p.Z = -2.0f;
+			    p.timeout = 10;
+			}
+		}
 	}
 }
 

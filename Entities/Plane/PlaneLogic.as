@@ -172,6 +172,20 @@ void onTick(CBlob@ this)
 		}
 		return;
 	}
+	else if (isClient())
+	{
+		// fire particle
+		SColor color = SColor(0xff, 0xdb, 0x57, 0x43);
+		f32 randomInn = -10.0f + ((f32(XORRandom(256)) / 256.0f) * 20.0f);
+		CParticle@ p = ParticlePixelUnlimited(this.getPosition(), Vec2f(0.0f, 5.0f).RotateBy(this.getAngleDegrees() + randomInn), color, true);
+		if(p !is null)
+		{
+		    p.collides = false;
+		    p.gravity = Vec2f_zero;
+		    p.Z = -2.0f;
+		    p.timeout = 10;
+		}
+	}
 
 	// cooldown
 	if (plane.bullet_time > 0) plane.bullet_time--;
