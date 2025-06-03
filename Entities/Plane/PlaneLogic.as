@@ -1276,7 +1276,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					if (esm) missile.Tag("ESM");
 					missile.IgnoreCollisionWhileOverlapped(this);
 					missile.server_setTeamNum(this.getTeamNum());
-					missile.setPosition(this.getPosition() + (Vec2f(number >= 2 ? 8.0f : 6.0f, 0.0f) * (number % 2 == 0 ? 1 : -1)).RotateBy(this.getAngleDegrees()));
+					missile.setPosition(this.getPosition() + (Vec2f(number >= 2 ? 6.0f : 8.0f, 0.0f) * (number % 2 == 0 ? 1 : -1)).RotateBy(this.getAngleDegrees()));
 					missile.setVelocity((Vec2f(0.0f, -1.0f).RotateBy(this.getAngleDegrees())) * this.getVelocity().getLength());
 	
 				}
