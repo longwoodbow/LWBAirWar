@@ -2,6 +2,7 @@
 #include "Default/DefaultLoaders.as"
 #include "PrecacheTextures.as"
 #include "EmotesCommon.as"
+#include "TeamColour.as";
 
 void onInit(CRules@ this)
 {
@@ -27,6 +28,8 @@ void onInit(CRules@ this)
 	s_effects = false;
 
 	sv_max_localplayers = 1;
+
+	v_showminimap = false;
 
 	PrecacheTextures();
 
@@ -84,6 +87,67 @@ void onTick(CRules@ this)
 		map.SetBorderColourTop(SColor(has_solid_tiles ? 0xff000000 : 0x80000000));
 	}
 	*/
+}
+
+void onRender(CRules@ this)
+{
+	CCamera@ camera = getCamera();
+	if (camera is null) return;
+
+	f32 zoom = camera.targetDistance;
+
+	CBlob@[] planes;
+	if (getBlobsByTag("player", @planes))
+	{
+		for (int i = 0; i < planes.size(); i++)
+		{
+			CBlob@ otherPlane = planes[i];
+			SColor teamColor = getTeamColor(otherPlane.getTeamNum());
+			Vec2f planePos = otherPlane.getPosition();
+
+			if (!otherPlane.isMyPlayer())
+			{
+				Vec2f point0 = planePos + Vec2f(-8.0f, -8.0f).RotateBy(camera.getRotation()) / zoom;
+				Vec2f point1 = planePos + Vec2f(8.0f, -8.0f).RotateBy(camera.getRotation()) / zoom;
+				Vec2f point2 = planePos + Vec2f(8.0f, 8.0f).RotateBy(camera.getRotation()) / zoom;
+				Vec2f point3 = planePos + Vec2f(-8.0f, 8.0f).RotateBy(camera.getRotation()) / zoom;
+				GUI::DrawLine(point0, point1, teamColor);
+				GUI::DrawLine(point1, point2, teamColor);
+				GUI::DrawLine(point2, point3, teamColor);
+				GUI::DrawLine(point3, point0, teamColor);
+			}
+
+			// Check IEWS
+			if (otherPlane.exists("IEWS") && otherPlane.get_u16("IEWS") > 0)
+			{
+				GUI::DrawCircle(otherPlane.getScreenPos(), 500.0f * Maths::Pi * zoom, teamColor);
+			}
+		}
+	}
+
+	CBlob@[] bases;
+	if (getBlobsByName("airwar_base", @bases))
+	{
+		for (int i = 0; i < bases.size(); i++)
+		{
+			CBlob@ base = bases[i];
+			SColor teamColor = getTeamColor(base.getTeamNum());
+			Vec2f basePos = base.getPosition();
+
+			Vec2f point0 = basePos + Vec2f(8.0f, 0.0f).RotateBy(camera.getRotation()) / zoom;
+			Vec2f point1 = basePos + Vec2f(8.0f, 0.0f).RotateBy(camera.getRotation() - 60) / zoom;
+			Vec2f point2 = basePos + Vec2f(8.0f, 0.0f).RotateBy(camera.getRotation() - 120) / zoom;
+			Vec2f point3 = basePos + Vec2f(8.0f, 0.0f).RotateBy(camera.getRotation() - 180) / zoom;
+			Vec2f point4 = basePos + Vec2f(8.0f, 0.0f).RotateBy(camera.getRotation() + 120) / zoom;
+			Vec2f point5 = basePos + Vec2f(8.0f, 0.0f).RotateBy(camera.getRotation() + 60) / zoom;
+			GUI::DrawLine(point0, point1, teamColor);
+			GUI::DrawLine(point1, point2, teamColor);
+			GUI::DrawLine(point2, point3, teamColor);
+			GUI::DrawLine(point3, point4, teamColor);
+			GUI::DrawLine(point4, point5, teamColor);
+			GUI::DrawLine(point5, point0, teamColor);
+		}
+	}
 }
 
 //chat stuff!

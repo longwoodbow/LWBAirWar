@@ -1,5 +1,6 @@
 //plane HUD
 #include "PlaneCommon.as";
+#include "TeamColour.as";
 
 void onInit(CSprite@ this)
 {
@@ -41,31 +42,14 @@ void onRender(CSprite@ this)
 		for (int i = 0; i < planes.size(); i++)
 		{
 			CBlob@ otherPlane = planes[i];
-			SColor teamColor = otherPlane.getTeamNum() == 1 ? SColor(0xff, 0xff, 0x00, 0x00) :  SColor(0xff, 0x00, 0x00, 0xFF);
+			SColor teamColor = getTeamColor(otherPlane.getTeamNum());
 			Vec2f planePos = otherPlane.getPosition();
 
-			if (IsOnScreen(otherPlane.getScreenPos()) && !otherPlane.isMyPlayer())
-			{
-				Vec2f point0 = planePos + Vec2f(-8.0f, -8.0f).RotateBy(blob.getAngleDegrees()) / zoom;
-				Vec2f point1 = planePos + Vec2f(8.0f, -8.0f).RotateBy(blob.getAngleDegrees()) / zoom;
-				Vec2f point2 = planePos + Vec2f(8.0f, 8.0f).RotateBy(blob.getAngleDegrees()) / zoom;
-				Vec2f point3 = planePos + Vec2f(-8.0f, 8.0f).RotateBy(blob.getAngleDegrees()) / zoom;
-				GUI::DrawLine(point0, point1, teamColor);
-				GUI::DrawLine(point1, point2, teamColor);
-				GUI::DrawLine(point2, point3, teamColor);
-				GUI::DrawLine(point3, point0, teamColor);
-			}
-			else if (!otherPlane.isMyPlayer())
+			if (!IsOnScreen(otherPlane.getScreenPos()) && !otherPlane.isMyPlayer())
 			{
 				Vec2f angleVec = planePos - pos;
 				angleVec.Normalize();
 				GUI::DrawArrow(pos + angleVec * 125.0f / zoom, pos + angleVec * 150.0f / zoom, teamColor);
-			}
-
-			// Check IEWS
-			if (otherPlane.exists("IEWS") && otherPlane.get_u16("IEWS") > 0)
-			{
-				GUI::DrawCircle(otherPlane.getScreenPos(), 500.0f * Maths::Pi * zoom, teamColor);
 			}
 		}
 	}
@@ -76,25 +60,10 @@ void onRender(CSprite@ this)
 		for (int i = 0; i < bases.size(); i++)
 		{
 			CBlob@ base = bases[i];
-			SColor teamColor = base.getTeamNum() == 1 ? SColor(0xff, 0xff, 0x00, 0x00) :  SColor(0xff, 0x00, 0x00, 0xFF);
+			SColor teamColor = getTeamColor(base.getTeamNum());
 			Vec2f basePos = base.getPosition();
 
-			if (IsOnScreen(base.getScreenPos()))
-			{
-				Vec2f point0 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees()) / zoom;
-				Vec2f point1 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees() - 60) / zoom;
-				Vec2f point2 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees() - 120) / zoom;
-				Vec2f point3 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees() - 180) / zoom;
-				Vec2f point4 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees() + 120) / zoom;
-				Vec2f point5 = basePos + Vec2f(8.0f, 0.0f).RotateBy(blob.getAngleDegrees() + 60) / zoom;
-				GUI::DrawLine(point0, point1, teamColor);
-				GUI::DrawLine(point1, point2, teamColor);
-				GUI::DrawLine(point2, point3, teamColor);
-				GUI::DrawLine(point3, point4, teamColor);
-				GUI::DrawLine(point4, point5, teamColor);
-				GUI::DrawLine(point5, point0, teamColor);
-			}
-			else
+			if (!IsOnScreen(base.getScreenPos()))
 			{
 				Vec2f angleVec = basePos - pos;
 				angleVec.Normalize();
