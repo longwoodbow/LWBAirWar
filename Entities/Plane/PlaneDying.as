@@ -18,7 +18,9 @@ void onTick(CBlob@ this)
 	}
 }
 
-void onDie(CBlob@ this)
+void onGib(CSprite@ this)
 {
-	Explode(this, this.get_f32("explosive_radius"), this.get_f32("explosive_damage"));
+	CBlob@ blob = this.getBlob();
+	if (blob is null) return;
+	Explode(blob, blob.get_f32("explosive_radius"), blob.get_f32("explosive_damage"));
 }
