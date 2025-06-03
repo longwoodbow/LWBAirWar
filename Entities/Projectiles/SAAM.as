@@ -15,6 +15,7 @@ void onInit(CBlob@ this)
 	consts.net_threshold_multiplier = 4.0f;
 	this.Tag("projectile");
 	this.Tag("homing");
+	this.sendonlyvisible = false;
 
 	this.getSprite().SetEmitSound("FireRoar.ogg");
     this.getSprite().SetEmitSoundPaused(false);

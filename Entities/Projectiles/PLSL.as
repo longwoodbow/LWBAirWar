@@ -12,6 +12,7 @@ void onInit(CBlob@ this)
 	consts.bullet = true;
 	consts.net_threshold_multiplier = 4.0f;
 	this.Tag("projectile");
+	this.sendonlyvisible = false;
 
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 
