@@ -16,9 +16,6 @@ void onInit(CBlob@ this)
 	this.Tag("homing");
 	this.sendonlyvisible = false;
 
-	this.getSprite().SetEmitSound("FireRoar.ogg");
-    this.getSprite().SetEmitSoundPaused(false);
-
 	this.SetMapEdgeFlags(CBlob::map_collide_none);
 
 	this.server_SetTimeToDie(10);
@@ -82,6 +79,8 @@ void onTick(CBlob@ this)
 		}
 		Pierce(this);   //map
 		this.setAngleDegrees(-angle);
+
+		velocity.Normalize();
 
 		this.AddForce(velocity * 0.2f);
 	}
