@@ -162,7 +162,7 @@ void onTick(CBlob@ this)
 		plane.amount_special = specialAmounts[plane.special_type];
 
 		// click menu
-		if (this.isMyPlayer()) 
+		if (this.isMyPlayer() || (this.isBot() && isServer())) 
 		{
 			if (this.isKeyJustPressed(key_use)) 
 			{
@@ -396,7 +396,10 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	if (!this.isMyPlayer()) return;
+	CPlayer@ player = this.getPlayer();
+	bool bot = this.isBot() || player is null || player.isBot();
+
+	if (!(this.isMyPlayer() || (bot && isServer()))) return;
 
 	if (this.isKeyJustPressed(key_use) && !this.hasTag("landed"))
 	{
