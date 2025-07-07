@@ -99,6 +99,9 @@ void onTick(CBlob@ this)
 	this.Untag("ECM");
 	this.Untag("ESM");
 
+	CPlayer@ player = this.getPlayer();
+	bool bot = this.isBot() || player is null || player.isBot();
+
 	// it dies when leaving the map
 	{
 		Vec2f pos = this.getPosition();
@@ -162,7 +165,7 @@ void onTick(CBlob@ this)
 		plane.amount_special = specialAmounts[plane.special_type];
 
 		// click menu
-		if (this.isMyPlayer() || (this.isBot() && isServer())) 
+		if (this.isMyPlayer() || (bot && isServer())) 
 		{
 			if (this.isKeyJustPressed(key_use)) 
 			{
@@ -395,9 +398,6 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-
-	CPlayer@ player = this.getPlayer();
-	bool bot = this.isBot() || player is null || player.isBot();
 
 	if (!(this.isMyPlayer() || (bot && isServer()))) return;
 
