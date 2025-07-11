@@ -1424,18 +1424,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	else return damage;
 }
 
-bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
-{
-	//only collide with projectiles
-	if (blob.hasTag("projectile") && this.getTeamNum() != blob.getTeamNum())
-	{
-		return true;
-	}
-
-	return false;
-}
-
 // clash
+// temporarily disabled, sometimes missiles can insta kill
+/*
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
 	if (solid)
@@ -1446,6 +1437,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		}
 	}
 }
+*/
 
 // CAMERA
 

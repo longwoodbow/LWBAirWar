@@ -10,7 +10,6 @@ void onInit(CBrain@ this)
 	blob.set_u32("missile time", getGameTime());
 }
 
-
 void onTick(CBrain@ this)
 {
 	CBlob@ blob = this.getBlob();
@@ -35,6 +34,26 @@ void onTick(CBrain@ this)
 					this.SetTarget(plane);
 					@target = @plane;
 					shortest = length;
+				}
+			}
+		}
+	}
+
+
+	// if have no target, base is the target
+	if (target is null)
+	{
+		CBlob@[] bases;
+		if (getBlobsByName("airwar_base", @bases))
+		{
+			for (int i = 0; i < bases.size(); i++)
+			{
+				CBlob@ base = bases[i];
+				if (blob.getTeamNum() != base.getTeamNum())
+				{
+					shortest = (base.getPosition() - pos).getLength();
+					this.SetTarget(base);
+					@target = @base;
 				}
 			}
 		}
@@ -70,9 +89,64 @@ void onTick(CBrain@ this)
 
 	// try to dodge missiles	
 
-	// follow target
+	bool dodge = false;
+	CBlob@[] missiles;
+	f32 shortestMissile = 10000.0f;
+	if (getBlobsByTag("projectile", @missiles))
+	{
+		for (int i = 0; i < missiles.size(); i++)
+		{
+			CBlob@ missile = missiles[i];
+			if (blob.getTeamNum() != missile.getTeamNum())
+			{
+				Vec2f missilePos = missile.getPosition() - pos;
+				f32 missileAngle = missilePos.getAngle();
+				f32 missileVelAngle = (-missile.getVelocity()).getAngle();
+				f32 length = missilePos.getLength();
 
-	if (target !is null)
+				f32 dif = missileAngle - missileVelAngle;
+				while (dif > 180.0f)
+				{
+					dif -= 360.0f;
+				}
+				while (dif < -180.0f)
+				{
+					dif += 360.0f;
+				}
+
+				if (dif < 20.0f && dif > -20.0f && length < shortest)
+				{
+					dodge = true;
+					shortest = length;
+
+					f32 dodgeAngle = missileVelAngle - 90.0f + angle;
+					while (dodgeAngle > 180.0f)
+					{
+						dodgeAngle -= 360.0f;
+					}
+					while (dodgeAngle < -180.0f)
+					{
+						dodgeAngle += 360.0f;
+					}
+
+					blob.setKeyPressed(key_up, true);
+
+					if (dodgeAngle > 90.0f || (dodgeAngle < 0.0f && dodgeAngle > -90.0f))
+					{
+						blob.setKeyPressed(key_left, true);
+						blob.setKeyPressed(key_right, false);
+					}
+					else
+					{
+						blob.setKeyPressed(key_left, false);
+						blob.setKeyPressed(key_right, true);
+					}
+				}
+			}
+		}
+	}
+	// follow target
+	if (!dodge && target !is null)
 	{
 		f32 targetAngle = -(target.getPosition() - pos).getAngle() + 90.0f - angle;
 
@@ -93,6 +167,16 @@ void onTick(CBrain@ this)
 		else
 		{
 			blob.setKeyPressed(key_right, true);
+		}
+
+
+		if (shortest > 1000.0f)
+		{
+			blob.setKeyPressed(key_up, true);
+		}
+		else
+		{
+			//blob.setKeyPressed(key_down, true);
 		}
 	}
 

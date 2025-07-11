@@ -24,3 +24,15 @@ void onGib(CSprite@ this)
 	if (blob is null) return;
 	Explode(blob, blob.get_f32("explosive_radius"), blob.get_f32("explosive_damage"));
 }
+
+// moved here because it want to work even died
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	//only collide with projectiles
+	if (blob.hasTag("projectile") && this.getTeamNum() != blob.getTeamNum())
+	{
+		return true;
+	}
+
+	return false;
+}
