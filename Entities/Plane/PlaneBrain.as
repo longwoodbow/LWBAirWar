@@ -39,22 +39,23 @@ void onTick(CBrain@ this)
 		}
 	}
 
-
+	CBlob@ allyBase = null;
 	// if have no target, base is the target
-	if (target is null)
+	CBlob@[] bases;
+	if (getBlobsByName("airwar_base", @bases))
 	{
-		CBlob@[] bases;
-		if (getBlobsByName("airwar_base", @bases))
+		for (int i = 0; i < bases.size(); i++)
 		{
-			for (int i = 0; i < bases.size(); i++)
+			CBlob@ base = bases[i];
+			if (blob.getTeamNum() != base.getTeamNum() && target is null)
 			{
-				CBlob@ base = bases[i];
-				if (blob.getTeamNum() != base.getTeamNum())
-				{
-					shortest = (base.getPosition() - pos).getLength();
-					this.SetTarget(base);
-					@target = @base;
-				}
+				shortest = (base.getPosition() - pos).getLength();
+				this.SetTarget(base);
+				@target = @base;
+			}
+			else if (blob.getTeamNum() == base.getTeamNum())
+			{
+				@allyBase = @base;
 			}
 		}
 	}
@@ -86,6 +87,16 @@ void onTick(CBrain@ this)
 
 	// movement
 	f32 angle = blob.getAngleDegrees();
+
+	bool retreat = false;
+	PlaneInfo@ planeInfo;
+	if (!blob.get("planeInfo", @planeInfo))
+	{
+		return;
+	}
+
+	if (blob.getHealth() <= blob.getInitialHealth() / 2.0f || planeInfo.amount_missile <= 0)
+		retreat = true;
 
 	// try to dodge missiles	
 
@@ -145,8 +156,57 @@ void onTick(CBrain@ this)
 			}
 		}
 	}
+
+	if (!dodge && retreat && allyBase !is null)
+	{
+		Vec2f targetPos = allyBase.getPosition() - pos;
+		f32 targetLength = targetPos.getLength();
+		f32 targetAngle = -(targetPos).getAngle() + 90.0f - angle;
+
+		while (targetAngle > 180.0f)
+		{
+			targetAngle -= 360.0f;
+		}
+
+		while (targetAngle < -180.0f)
+		{
+			targetAngle += 360.0f;
+		}
+
+		if (targetAngle < 0.0f)
+		{
+			blob.setKeyPressed(key_left, true);
+		}
+		else
+		{
+			blob.setKeyPressed(key_right, true);
+		}
+
+		if (targetLength > 250.0f)
+		{
+			blob.setKeyPressed(key_up, true);
+		}
+		else
+		{
+			blob.setKeyPressed(key_down, true);
+		}
+
+		CBlob@[] overlapping;
+		if (blob.getOverlapping(@overlapping))
+		{
+			for(int i = 0; i < overlapping.size(); i++)
+			{
+				CBlob@ b = overlapping[i];
+				if (b.getName() == "airwar_base" && blob.getTeamNum() == b.getTeamNum())
+				{
+					blob.setKeyPressed(key_use, true);
+					break;
+				}
+			}
+		}
+	}
 	// follow target
-	if (!dodge && target !is null)
+	else if (!dodge && target !is null)
 	{
 		f32 targetAngle = -(target.getPosition() - pos).getAngle() + 90.0f - angle;
 
@@ -176,7 +236,7 @@ void onTick(CBrain@ this)
 		}
 		else
 		{
-			//blob.setKeyPressed(key_down, true);
+			blob.setKeyPressed(key_down, true);
 		}
 	}
 

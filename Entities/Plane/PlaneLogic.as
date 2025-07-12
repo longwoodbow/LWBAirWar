@@ -414,7 +414,7 @@ void onTick(CBlob@ this)
 				{
 					this.SendCommand(this.getCommandID("landing"));
 
-					MakeSpecialWeaponMenu(this);
+					if (this.isMyPlayer()) MakeSpecialWeaponMenu(this);
 
 					break;
 				}
