@@ -28,6 +28,7 @@ void onInit(CBlob@ this)
 	this.Tag("landed");
 	this.Tag("spawned");
 	this.Tag("heavy weight");
+	this.Tag("ignore fall");
 
 	this.set_f32("explosive_radius", 64.0f);
 	this.set_f32("explosive_damage", 0.0f);
